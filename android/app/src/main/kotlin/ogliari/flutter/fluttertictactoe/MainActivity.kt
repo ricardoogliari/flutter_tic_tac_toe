@@ -40,8 +40,8 @@ class MainActivity: FlutterActivity() {
 
         //vamos nos ligar ao projeto do pubnub, na nuvem
         val pnConfiguration = PNConfiguration()
-        pnConfiguration.subscribeKey = "sub-c-b46b44f4-b357-11ea-a40b-6ab2c237bf6e"
-        pnConfiguration.publishKey = "pub-c-e64c54b3-4076-4638-a0d6-f17d9a5e5442"
+        pnConfiguration.subscribeKey = "sub-c-47bb3e80-782a-4908-8109-d44313ad7b7f"
+        pnConfiguration.publishKey = "pub-c-620c86a0-a383-4b77-884d-ebbc3fe669ab"
         pnConfiguration.uuid = "myUniqueUUID"
         pubnub = PubNub(pnConfiguration)
 
