@@ -19,8 +19,8 @@ class _GameState extends State<Game> {
 
   static const platform = const MethodChannel('game/exchange');
 
-  bool minhaVez;
-  WrapperCreator creator;
+  late bool minhaVez;
+  late WrapperCreator creator;
 
   // 0 = branco. 1 = eu. 2 - adversário
   List<List<int>> cells = [
@@ -46,9 +46,6 @@ class _GameState extends State<Game> {
   }
 
   void configurePubNub(){
-    //aqui nos confiragmos o método que vai responder as mensagens
-    //oriundas do código nativo
-    // ignore: missing_return
     platform.setMethodCallHandler((call) {
       String action = call.method;
       String argumentos = call.arguments.toString();
@@ -70,12 +67,14 @@ class _GameState extends State<Game> {
           _showChat(parts[1]);
         }
       }
+
+      return Future.value(true);
     });
   }
 
   Widget buildButton(String label, bool owner) => Container(
     width: ScreenUtil().setWidth(300),
-    child: OutlineButton(
+    child: ElevatedButton(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Text(
@@ -136,87 +135,90 @@ class _GameState extends State<Game> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(width: 700, height: 1400, allowFontScaling: false);
-
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: ScreenUtil().setWidth(550),
-                      height: ScreenUtil().setHeight(550),
-                      color: colorBackBlue1,
-                    ),
-                    Container(
-                      width: ScreenUtil().setWidth(150),
-                      height: ScreenUtil().setHeight(550),
-                      color: colorBackBlue2,
-                    )
-                  ],
-                ),
-                Container(
-                  width: ScreenUtil().setWidth(700),
-                  height: ScreenUtil().setHeight(850),
-                  color: colorBackBlue3,
-                )
-              ],
-            ),
-            Container(
-              height: ScreenUtil().setHeight(1400),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    //o creator indica que o jogo começou ou não
-                    //se o jogo não começou, creator vai estar nulo e
-                    //mostramos os dois botões, caso contrário, o
-                    //label de direcionamento da jogada
-                    creator == null ? Row(
-                      children: [
-                        buildButton("Criar", true),
-                        SizedBox(width: 10),
-                        buildButton("Entrar", false)
-                      ],
-                      mainAxisSize: MainAxisSize.min,
-                    ) : InkWell(
-                      child: Text(
-                          minhaVez ? "Sua Vez!!" : "Aguarde Sua Vez!!!",
-                          style: textStyle36
+    return ScreenUtilInit(
+      designSize: Size(700, 1400),
+      builder: (BuildContext context, Widget? child) {
+          return Scaffold(
+        body: SingleChildScrollView(
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: ScreenUtil().setWidth(550),
+                        height: ScreenUtil().setHeight(550),
+                        color: colorBackBlue1,
                       ),
-                      onLongPress: (){
-                        _sendMessage();
-                      },
-                    ),
-                    GridView.count(
-                      shrinkWrap: true,
-                      padding: EdgeInsets.all(20),
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      crossAxisCount: 3,
-                      children: <Widget>[
-                        getCell(0, 0),
-                        getCell(0, 1),
-                        getCell(0, 2),
-                        getCell(1, 0),
-                        getCell(1, 1),
-                        getCell(1, 2),
-                        getCell(2, 0),
-                        getCell(2, 1),
-                        getCell(2, 2),
-                      ],
-                    ),
-                  ],
-                ),
+                      Container(
+                        width: ScreenUtil().setWidth(150),
+                        height: ScreenUtil().setHeight(550),
+                        color: colorBackBlue2,
+                      )
+                    ],
+                  ),
+                  Container(
+                    width: ScreenUtil().setWidth(700),
+                    height: ScreenUtil().setHeight(850),
+                    color: colorBackBlue3,
+                  )
+                ],
               ),
-            )
-          ],
+              Container(
+                height: ScreenUtil().setHeight(1400),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      //o creator indica que o jogo começou ou não
+                      //se o jogo não começou, creator vai estar nulo e
+                      //mostramos os dois botões, caso contrário, o
+                      //label de direcionamento da jogada
+                      creator == null ? Row(
+                        children: [
+                          buildButton("Criar", true),
+                          SizedBox(width: 10),
+                          buildButton("Entrar", false)
+                        ],
+                        mainAxisSize: MainAxisSize.min,
+                      ) : InkWell(
+                        child: Text(
+                            minhaVez ? "Sua Vez!!" : "Aguarde Sua Vez!!!",
+                            style: textStyle36
+                        ),
+                        onLongPress: (){
+                          _sendMessage();
+                        },
+                      ),
+                      GridView.count(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.all(20),
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        crossAxisCount: 3,
+                        children: <Widget>[
+                          getCell(0, 0),
+                          getCell(0, 1),
+                          getCell(0, 2),
+                          getCell(1, 0),
+                          getCell(1, 1),
+                          getCell(1, 2),
+                          getCell(2, 0),
+                          getCell(2, 1),
+                          getCell(2, 2),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
-      ),
+      );
+      },
     );
   }
 
@@ -232,7 +234,7 @@ class _GameState extends State<Game> {
             controller: editingController,
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text('Jogar'),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -258,6 +260,8 @@ class _GameState extends State<Game> {
       if (result){
         return true;
       }
+
+      return false;
     } on PlatformException catch (e) {
       return false;
     }
@@ -321,7 +325,7 @@ class _GameState extends State<Game> {
             controller: editingController,
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text('Enviar'),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -346,7 +350,7 @@ class _GameState extends State<Game> {
           title: Text('Você recebeu uma nova mensagem:'),
           content: Text(message),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text('Ok'),
               onPressed: () {
                 Navigator.of(context).pop();
